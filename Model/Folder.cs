@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    public class Folder : IFileSystemItem
+    public class Folder : FileSystemItemBase
     {
         private List<IFileSystemItem> _items = new List<IFileSystemItem>();
 
-        public Folder(String name, int size)
+        public Folder(String path, int size, DateTime creationDate, DateTime modificationDate)
+            : base(path, size, creationDate, modificationDate)
         {
-            Name = name;
-            Size = size;
         }
 
-        public string Name { get; }
-        public int Size { get; }
-        public IEnumerable<IFileSystemItem> Objects { get { return _items; } }
+        public override IEnumerable<IFileSystemItem> Objects { get { return _items; } }
 
         public void Add(IFileSystemItem item)
         {

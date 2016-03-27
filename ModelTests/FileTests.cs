@@ -10,13 +10,8 @@ namespace ModelTests
         [TestMethod]
         public void TestGetters()
         {
-            const String expectedName = "expected";
-            const int expectedSize = 42;
+            var file = new File("name", 0, DateTime.Today, DateTime.Now);
 
-            File file = new File(expectedName, expectedSize);
-
-            Assert.AreEqual(expectedName, file.Name);
-            Assert.AreEqual(expectedSize, file.Size);
             Assert.IsNull(file.Objects);
         }
     }

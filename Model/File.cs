@@ -3,16 +3,13 @@ using System.Collections.Generic;
 
 namespace Model
 {
-    public class File : IFileSystemItem
+    public class File : FileSystemItemBase
     {
-        public File(String name, int size)
+        public File(String path, int size, DateTime creationDate, DateTime modificationDate)
+            : base(path, size, creationDate, modificationDate)
         {
-            Name = name;
-            Size = size;
         }
 
-        public String Name { get; }
-        public int Size { get; }
-        public IEnumerable<IFileSystemItem> Objects { get { return null; } }
+        public override IEnumerable<IFileSystemItem> Objects { get { return null; } }
     }
 }

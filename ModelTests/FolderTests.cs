@@ -10,28 +10,29 @@ namespace ModelTests
         [TestMethod]
         public void TestGetters()
         {
-            const String expectedName = "expected";
-            const int expectedSize = 42;
+            var folder = new Folder("name", 0, DateTime.Today, DateTime.Now);
 
-            Folder folder = new Folder(expectedName, expectedSize);
-            Assert.AreEqual(expectedName, folder.Name);
-            Assert.AreEqual(expectedSize, folder.Size);
             Assert.IsNotNull(folder.Objects);
 
             var enumerator = folder.Objects.GetEnumerator();
             Assert.IsFalse(enumerator.MoveNext());
 
-            const String expectedFileName = "fileName";
-            const int expectedFileSize = 43;
-            folder.Add(new File(expectedFileName, expectedFileSize));
+            var expectedFileName = "fileName";
+            var expectedFileSize = 43;
+            var expectedCreationDate = DateTime.Today;
+            var expectedModificationdDate = DateTime.Now;
+
+            folder.Add(new File(expectedFileName, expectedFileSize, expectedCreationDate, expectedModificationdDate));
 
             Assert.IsNotNull(folder.Objects);
             enumerator = folder.Objects.GetEnumerator();
             Assert.IsTrue(enumerator.MoveNext());
             var curr = enumerator.Current;
             Assert.IsNotNull(curr);
-            Assert.AreEqual(expectedFileName, curr.Name);
+            Assert.AreEqual(expectedFileName, curr.Path);
             Assert.AreEqual(expectedFileSize, curr.Size);
+            Assert.AreEqual(expectedCreationDate, curr.CreationDate);
+            Assert.AreEqual(expectedModificationdDate, curr.ModificationDate);
             Assert.IsNull(curr.Objects);
         }
     }
