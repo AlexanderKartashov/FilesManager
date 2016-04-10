@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Model
 {
     public abstract class FileSystemItemBase : IFileSystemItem
     {
-        public FileSystemItemBase(String path, int size, DateTime creationDate, DateTime modificationDate)
+        public FileSystemItemBase(String path)
         {
-            Path  = path;
-            Size = size;
-            CreationDate = creationDate;
-            ModificationDate = modificationDate;
+            Info = CreateInfo(path);
         }
 
-        public FileSystemItemBase()
-        {
-        }
-
-        public String Path { get; }
-        public int Size { get; }
-
-        public DateTime CreationDate { get; }
-        public DateTime ModificationDate { get; }
+        public FileSystemInfo Info { get; }
 
         public abstract IEnumerable<IFileSystemItem> Objects { get; }
+
+        protected abstract FileSystemInfo CreateInfo(String path);
     }
 }

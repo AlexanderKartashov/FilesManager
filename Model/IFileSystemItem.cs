@@ -6,11 +6,7 @@ namespace Model
 {
     public interface IFileSystemItem
     {
-        String Path { get; }
-        int Size { get; }
-
-        DateTime CreationDate { get; }
-        DateTime ModificationDate { get; }
+        FileSystemInfo Info { get; }
 
         IEnumerable<IFileSystemItem> Objects { get; }
     }

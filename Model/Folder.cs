@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Model
 {
@@ -10,8 +8,8 @@ namespace Model
     {
         private List<IFileSystemItem> _items = new List<IFileSystemItem>();
 
-        public Folder(String path, int size, DateTime creationDate, DateTime modificationDate)
-            : base(path, size, creationDate, modificationDate)
+        public Folder(String path)
+            : base(path)
         {
         }
 
@@ -20,6 +18,11 @@ namespace Model
         public void Add(IFileSystemItem item)
         {
             _items.Add(item);
+        }
+
+        protected override FileSystemInfo CreateInfo(String path)
+        {
+            return new DirectoryInfo(path);
         }
     }
 }
