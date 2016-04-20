@@ -8,13 +8,13 @@ namespace NUnit.ModelTests
     public class FileTest
     {
         [Test]
-        public void TestMethod()
+        public void TestFile()
         {
             var file = new Model.File("file");
 
-            Assert.IsNull(file.Objects);
-            Assert.NotNull(file.Info);
-            Assert.IsInstanceOf<FileInfo>(file.Info);
+            Assert.That(file.Objects, Is.Null);
+            Assert.That(file.Info, Is.Not.Null);
+            Assert.That(file.Info, Is.InstanceOf<FileInfo>());
         }
     }
 }

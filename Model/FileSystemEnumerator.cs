@@ -8,10 +8,9 @@ namespace Model
     {
         public IFileSystemItem GetFileSystemIerarchy(String initialPath)
         {
-            var attr = System.IO.File.GetAttributes(initialPath);
-            if (!attr.HasFlag(FileAttributes.Directory))
+            if (!Directory.Exists(initialPath))
             {
-                throw new Exception();
+                throw new ArgumentException("directory not exists, or path not a directory");
             }
 
             return GetFolderIerarchy(initialPath);

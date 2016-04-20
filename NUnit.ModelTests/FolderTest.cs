@@ -8,25 +8,25 @@ namespace NUnit.ModelTests
     public class FolderTest
     {
         [Test]
-        public void TestMethod()
+        public void TestFolder()
         {
             var folder = new Folder("folder");
 
-            Assert.IsNotNull(folder.Objects);
-            Assert.NotNull(folder.Info);
-            Assert.IsInstanceOf<DirectoryInfo>(folder.Info);
+            Assert.That(folder.Objects, Is.Not.Null);
+            Assert.That(folder.Info, Is.Not.Null);
+            Assert.That(folder.Info, Is.InstanceOf<DirectoryInfo>());
 
             var enumerator = folder.Objects.GetEnumerator();
-            Assert.IsFalse(enumerator.MoveNext());
+            Assert.That(enumerator.MoveNext(), Is.False);
 
-            folder.Add(new Model.File("file"));
+            Assert.That(() => folder.Add(new Model.File("file")), Throws.Nothing);
 
-            Assert.IsNotNull(folder.Objects);
+            Assert.That(folder.Objects, Is.Not.Null);
             enumerator = folder.Objects.GetEnumerator();
-            Assert.IsTrue(enumerator.MoveNext());
+            Assert.That(enumerator.MoveNext(), Is.True);
             var curr = enumerator.Current;
-            Assert.IsNotNull(curr);
-            Assert.IsNull(curr.Objects);
+            Assert.That(curr, Is.Not.Null);
+            Assert.That(curr.Objects, Is.Null);
         }
     }
 }
