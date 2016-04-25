@@ -21,7 +21,7 @@ namespace NUnit.ModelTests
 
             Assert.That(() => folder.Add(new Model.File("file")), Throws.Nothing);
 
-            Assert.That(folder.Objects, Is.Not.Null);
+			Assert.That(folder.Objects, Is.Not.Null);
             enumerator = folder.Objects.GetEnumerator();
             Assert.That(enumerator.MoveNext(), Is.True);
             var curr = enumerator.Current;

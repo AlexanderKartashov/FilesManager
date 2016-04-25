@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystemEnumeratorTest.cs" />
+    <Compile Include="FileSystemTestsInitializer.cs" />
+    <Compile Include="ModelCreatorTest.cs" />
     <Compile Include="FileTest.cs" />
     <Compile Include="FolderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
