@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Model.Core;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ namespace NUnit.ModelTests
 
 		private void TestFile(IFileSystemItem item, String expectedPath)
 		{
-			Assert.That(item, Is.InstanceOf<Model.File>());
+			Assert.That(item, Is.InstanceOf<Model.Core.File>());
 			Assert.That(item.Info, Is.Not.Null);
 			Assert.That(item.Info.FullName, Is.EqualTo(expectedPath));
 			IEnumerable<IFileSystemItem> objects = null;

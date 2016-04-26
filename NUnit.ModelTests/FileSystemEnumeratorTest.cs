@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Model.Core;
+using Model.Processing;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -62,6 +63,12 @@ namespace NUnit.ModelTests
 		public void TearDown()
 		{
 			_enumerator.ProcessItemEvent -= _enumerator_ProcessItemEvent;
+		}
+
+		[Test]
+		public void ThrowsExceptionIfItemIsNull()
+		{
+			Assert.That(() => _enumerator.Enumerate(null), Throws.ArgumentNullException);
 		}
 
 		[Test]

@@ -1,5 +1,5 @@
-﻿using Model;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Model.Core;
 using System.IO;
 
 namespace NUnit.ModelTests
@@ -10,7 +10,7 @@ namespace NUnit.ModelTests
         [Test]
         public void TestFile()
         {
-            var file = new Model.File("file");
+			var file = new Model.Core.File("file");
 
             Assert.That(file.Objects, Is.Null);
             Assert.That(file.Info, Is.Not.Null);

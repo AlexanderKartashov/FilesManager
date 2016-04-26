@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Model;
+using Model.Core;
 using System.IO;
 
 namespace NUnit.ModelTests
@@ -19,7 +19,7 @@ namespace NUnit.ModelTests
             var enumerator = folder.Objects.GetEnumerator();
             Assert.That(enumerator.MoveNext(), Is.False);
 
-            Assert.That(() => folder.Add(new Model.File("file")), Throws.Nothing);
+            Assert.That(() => folder.Add(new Model.Core.File("file")), Throws.Nothing);
 
 			Assert.That(folder.Objects, Is.Not.Null);
             enumerator = folder.Objects.GetEnumerator();
