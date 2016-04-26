@@ -6,7 +6,10 @@ namespace Model
 {
     public class ModelCreator
     {
-        public IFileSystemItem GetFileSystemIerarchy(String initialPath)
+		public delegate void ItemAddedInModelHandler(String itemPath);
+		public event ItemAddedInModelHandler ItemAddedInModelEvent;
+
+		public IFileSystemItem GetFileSystemIerarchy(String initialPath)
         {
             if (!Directory.Exists(initialPath))
             {
@@ -18,13 +21,26 @@ namespace Model
 
         private IFileSystemItem GetFolderIerarchy(String path)
         {
-            var folder = new Folder(path);
+			DispatchEvent(path);
+
+			var folder = new Folder(path);
             var folderInfo = folder.Info as DirectoryInfo;
 
-            folderInfo.GetDirectories().ToList().ForEach((DirectoryInfo dir) => folder.Add(GetFolderIerarchy(dir.FullName)));
-            folderInfo.GetFiles().ToList().ForEach((FileInfo file) => folder.Add(new File(file.FullName)));
+            folderInfo.GetDirectories().ToList().ForEach((DirectoryInfo dir) => {
+				folder.Add(GetFolderIerarchy(dir.FullName));
+			});
+
+            folderInfo.GetFiles().ToList().ForEach((FileInfo file) => {
+				DispatchEvent(file.FullName);
+				folder.Add(new File(file.FullName));
+			});
 
             return folder;
         }
+
+		private void DispatchEvent(String path)
+		{
+			ItemAddedInModelEvent?.Invoke(path);
+		}
     }
 }

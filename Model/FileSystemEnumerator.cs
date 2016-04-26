@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Model
 {
-	class FileSystemEnumerator
+	public class FileSystemEnumerator
 	{
-		public void Enumerate(IFileSystemItem root, IItemsProcessor itemsProcessor)
+		public delegate void ProcessItemEventHandler(IFileSystemItem item, int level);
+
+		public event ProcessItemEventHandler ProcessItemEvent;
+
+		public void Enumerate(IFileSystemItem root)
 		{
-			EnumerateRecursive(root, itemsProcessor, 0);
+			EnumerateRecursive(root, 0);
 		}
 
-		private void EnumerateRecursive(IFileSystemItem root, IItemsProcessor itemsProcessor, int level)
+		private void EnumerateRecursive(IFileSystemItem root, int level)
 		{
-			itemsProcessor.Process(root, level);
-			root.Objects?.ToList().ForEach((IFileSystemItem item) => EnumerateRecursive(item, itemsProcessor, level + 1));
+			ProcessItemEvent?.Invoke(root, level);
+
+			root.Objects?.ToList().ForEach((IFileSystemItem item) => EnumerateRecursive(item, level + 1));
 		}
 	}
 }

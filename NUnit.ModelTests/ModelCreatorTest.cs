@@ -4,23 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NUnit.ModelTests
 {
-    [TestFixture]
+	[TestFixture]
     public class ModelCreatorTest
     {
 		private FileSystemTestsInitializer _initializer;
 		private ModelCreator _creator;
 
-        [OneTimeSetUp]
+		private List<String> _paths;
+		private IEnumerator<String> _pathEnumerator;
+
+		[OneTimeSetUp]
         public void OneTimeSetUp()
         {
 			_initializer = new FileSystemTestsInitializer();
 			_initializer.Init();
-        }
+		}
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
@@ -32,9 +33,32 @@ namespace NUnit.ModelTests
         public void SetUp()
         {
             _creator = new ModelCreator();
-        }
+			_creator.ItemAddedInModelEvent += _creator_ItemAddedInModelEvent;
 
-        [Test]
+			_paths = new List<String>
+			{
+				_initializer.initialPath,
+				_initializer.subDir1Path,
+				_initializer.subDir1FilePath,
+				_initializer.subDir2Path,
+				_initializer.subSubDirPath,
+				_initializer.subSubDirFilePath,
+				_initializer.subDir3Path,
+				_initializer.file1Path,
+				_initializer.file2Path
+			};
+			_pathEnumerator = _paths.GetEnumerator();
+			_pathEnumerator.Reset();
+			_pathEnumerator.MoveNext();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			_creator.ItemAddedInModelEvent -= _creator_ItemAddedInModelEvent;
+		}
+
+		[Test]
         public void ThrowsExceptionIfDirectoryNotExists()
         {
             var currentDir = Directory.GetCurrentDirectory();
@@ -48,6 +72,13 @@ namespace NUnit.ModelTests
         {
 			Assert.That(() => _creator.GetFileSystemIerarchy(_initializer.subDir1FilePath), Throws.ArgumentException);
         }
+
+		private void _creator_ItemAddedInModelEvent(string itemPath)
+		{
+			var testItem = _pathEnumerator.Current;
+			Assert.That(itemPath, Is.EqualTo(testItem));
+			_pathEnumerator.MoveNext();
+		}
 
 		private void TestFolder(IFileSystemItem item, String expectedPath, int expectedItemsCount)
 		{
