@@ -1,4 +1,6 @@
 ﻿using Model.Core;
+using Model.Processing;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ namespace NUnit.ModelTests
 	{
 		private FileSystemTestsInitializer _initializer;
 		private ModelCreator _creator;
+		private ItemsProcessor _processor;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -31,6 +34,29 @@ namespace NUnit.ModelTests
 		public void SetUp()
 		{
 			_creator = new ModelCreator();
+			_processor = new ItemsProcessor();
+		}
+
+		[Test]
+		public void ThrowsExceptionIfNotProcessingStrategy()
+		{
+			var model = _creator.GetFileSystemIerarchy(_initializer.initialPath);
+			Assert.That(() => _processor.Process(model, new Mock<IEnumerationStrategy>().Object), Throws.InvalidOperationException);
+		}
+
+		[Test]
+		public void ThrowsExceptionIfModelIsNull()
+		{
+			_processor.AddProcessorStrategy(new Mock<IItemProcessor>().Object);
+			Assert.That(() => _processor.Process(null, new Mock<IEnumerationStrategy>().Object), Throws.ArgumentNullException);
+		}
+
+		[Test]
+		public void ThrowsExceptionIfEnumerationStrategyNotSet()
+		{
+			var model = _creator.GetFileSystemIerarchy(_initializer.initialPath);
+			_processor.AddProcessorStrategy(new Mock<IItemProcessor>().Object);
+			Assert.That(() => _processor.Process(model, null), Throws.ArgumentNullException);
 		}
 	}
 }
