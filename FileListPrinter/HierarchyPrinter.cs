@@ -10,27 +10,18 @@ namespace FileListPrinter
 	{
 		private TextWriter _tw;
 		private bool _addIndent;
+		private IPrinter _printer;
 
-		public HierarchyPrinter(TextWriter tw, bool addIndent = true)
+		public HierarchyPrinter(TextWriter tw, IPrinter printer, bool addIndent = true)
 		{
+			_printer = printer;
 			_tw = tw;
 			_addIndent = addIndent;
 		}
 
 		public void ProcessItem(IFileSystemItem item, int level)
 		{
-			_tw.WriteLine(Printer(item, level));
-		}
-
-		private String Printer(IFileSystemItem item, int level)
-		{
-			var builder = new StringBuilder();
-			if (_addIndent)
-			{
-				builder.Append('\t', level);
-			}
-			builder.Append(item.Info.FullName);
-			return builder.ToString();
+			_tw.WriteLine(_printer.Print(item, level, _addIndent));
 		}
 	}
 }

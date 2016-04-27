@@ -49,9 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtraInfoPrinter.cs" />
     <Compile Include="HierarchyPrinter.cs" />
+    <Compile Include="IPrinter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimplePrinter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

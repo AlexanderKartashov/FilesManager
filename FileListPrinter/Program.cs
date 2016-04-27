@@ -47,12 +47,20 @@ namespace FileListPrinter
 				{ 2, () => new EnumerateFilesFirst() }
 			});
 
+			Console.WriteLine("Select print info type:");
+			Console.WriteLine("1 - only file path");
+			Console.WriteLine("2 - additional info");
+			var printer = Selector(new Dictionary<int, Func<IPrinter>>() {
+				{ 1, () => new SimplePrinter() },
+				{ 2, () => new ExtraInfoPrinter() }
+			});
+
 			Console.WriteLine("Select printer type:");
 			Console.WriteLine("1 - hierarchy");
 			Console.WriteLine("2 - files list");
 			var processorStrategy = Selector(new Dictionary<int, Func<Tuple<IItemProcessor, IList<IItemFilter>>>>() {
-				{ 1, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream), null) },
-				{ 2, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, false), new List<IItemFilter>(){ new FilesFilter() }) }
+				{ 1, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, printer), null) },
+				{ 2, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, printer, false), new List<IItemFilter>(){ new FilesFilter() }) }
 			});
 
 			var modelCreator = new ModelCreator();
