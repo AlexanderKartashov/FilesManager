@@ -50,6 +50,7 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilesFilterTest.cs" />
     <Compile Include="FileSystemEnumeratorTest.cs" />
     <Compile Include="FileSystemTestsInitializer.cs" />
     <Compile Include="ItemsProcessorTest.cs" />

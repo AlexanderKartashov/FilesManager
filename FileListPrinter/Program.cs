@@ -42,12 +42,51 @@ namespace FileListPrinter
 			Console.WriteLine("Select enumeration type:");
 			Console.WriteLine("1 - in depth");
 			Console.WriteLine("2 - files first");
-
-			var dictionary = new Dictionary<int, Func<IEnumerationStrategy>>() {
+			var strategy = Selector(new Dictionary<int, Func<IEnumerationStrategy>>() {
 				{ 1, () => new EnumerateInDepth() },
 				{ 2, () => new EnumerateFilesFirst() }
-			};
+			});
 
+			Console.WriteLine("Select printer type:");
+			Console.WriteLine("1 - hierarchy");
+			Console.WriteLine("2 - files list");
+			var processorStrategy = Selector(new Dictionary<int, Func<Tuple<IItemProcessor, IList<IItemFilter>>>>() {
+				{ 1, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream), null) },
+				{ 2, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, false), new List<IItemFilter>(){ new FilesFilter() }) }
+			});
+
+			var modelCreator = new ModelCreator();
+			IFileSystemItem model = null;
+			try
+			{
+				model = modelCreator.GetFileSystemIerarchy(rootPath);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(String.Format("error occured while model creation: {0}", e.Message));
+				return;
+			}
+
+			try
+			{
+				var processor = new ItemsProcessor();
+				processor.AddProcessorStrategy(processorStrategy.Item1, processorStrategy.Item2);
+				processor.Process(model, strategy);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(String.Format("error occured while model processing: {0}", e.Message));
+				return;
+			}
+			finally
+			{
+				stream.Flush();
+				stream.Close();
+			}
+		}
+
+		private static T Selector<T>(Dictionary<int, Func<T>> dictionary)
+		{
 			do
 			{
 				var choice = Console.ReadLine();
@@ -64,37 +103,9 @@ namespace FileListPrinter
 					continue;
 				}
 
-				var strategy = dictionary[parsedChoice].Invoke();
-
-				var modelCreator = new ModelCreator();
-				IFileSystemItem model = null;
-				try
-				{
-					model = modelCreator.GetFileSystemIerarchy(rootPath);
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(String.Format("error occured while model creation: {0}", e.Message));
-					return;
-				}
-
-				var processor = new ItemsProcessor();
-				try
-				{
-					processor.AddProcessorStrategy(new HierarchyPrinter(stream));
-					processor.Process(model, strategy);
-					break;
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(String.Format("error occured while model processing: {0}", e.Message));
-					return;
-				}
+				return dictionary[parsedChoice].Invoke();
 
 			} while (true);
-
-			stream.Flush();
-			stream.Close();
 		}
 	}
 }

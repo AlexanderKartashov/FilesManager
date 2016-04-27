@@ -50,6 +50,7 @@
     <Compile Include="Processing\BaseEnumerationStrategy.cs" />
     <Compile Include="Processing\EnumerateFilesFirst.cs" />
     <Compile Include="Processing\EnumerateInDepth.cs" />
+    <Compile Include="Processing\FilesFilter.cs" />
     <Compile Include="Processing\FileSystemEnumerator.cs" />
     <Compile Include="Processing\IEnumerationStrategy.cs" />
     <Compile Include="Processing\IItemFilter.cs" />
