@@ -42,7 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\File.cs" />
+    <Compile Include="Processing\BaseEnumerationStrategy.cs" />
+    <Compile Include="Processing\EnumerateFilesFirst.cs" />
+    <Compile Include="Processing\EnumerateInDepth.cs" />
     <Compile Include="Processing\FileSystemEnumerator.cs" />
+    <Compile Include="Processing\IEnumerationStrategy.cs" />
     <Compile Include="Processing\IItemFilter.cs" />
     <Compile Include="Processing\IItemProcessor.cs" />
     <Compile Include="Processing\ItemsProcessor.cs" />

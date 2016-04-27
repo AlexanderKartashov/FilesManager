@@ -12,6 +12,19 @@ namespace Model
 
 			public event ProcessItemEventHandler ProcessItemEvent;
 
+			private IEnumerationStrategy _enumerationStrategy;
+
+			public FileSystemEnumerator(IEnumerationStrategy enumerationStrategy)
+			{
+				if (enumerationStrategy == null)
+				{
+					throw new ArgumentNullException("enumeration strategu must be not null");
+				}
+
+				_enumerationStrategy = enumerationStrategy;
+				_enumerationStrategy.Init((IFileSystemItem item, int level) => ProcessItemEvent?.Invoke(item, level));
+			}
+
 			public void Enumerate(IFileSystemItem root)
 			{
 				if (root == null)
@@ -19,14 +32,7 @@ namespace Model
 					throw new ArgumentNullException("root item must be not null");
 				}
 
-				EnumerateRecursive(root, 0);
-			}
-
-			private void EnumerateRecursive(IFileSystemItem root, int level)
-			{
-				ProcessItemEvent?.Invoke(root, level);
-
-				root.Objects?.ToList().ForEach((IFileSystemItem item) => EnumerateRecursive(item, level + 1));
+				_enumerationStrategy.Enumerate(root);
 			}
 		} 
 	}

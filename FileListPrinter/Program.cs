@@ -35,7 +35,7 @@ namespace FileListPrinter
 			try
 			{
 				processor.AddProcessorStrategy(new HierarchyPrinter(Console.Out));
-				processor.Process(model);
+				processor.Process(model, new EnumerateInDepth());
 			}
 			catch(Exception)
 			{

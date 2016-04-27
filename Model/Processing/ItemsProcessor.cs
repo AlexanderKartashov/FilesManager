@@ -25,12 +25,14 @@ namespace Model
 
 			private class EnumeratorContainer : IDisposable
 			{
-				FileSystemEnumerator _enumerator = new FileSystemEnumerator();
+				FileSystemEnumerator _enumerator;
 				FileSystemEnumerator.ProcessItemEventHandler _eventHandler;
 
-				public EnumeratorContainer(FileSystemEnumerator.ProcessItemEventHandler handler)
+				public EnumeratorContainer(FileSystemEnumerator.ProcessItemEventHandler handler, IEnumerationStrategy enumerationStrategy)
 				{
 					_eventHandler = handler;
+
+					_enumerator = new FileSystemEnumerator(enumerationStrategy);
 					_enumerator.ProcessItemEvent += _eventHandler;
 				}
 
@@ -58,14 +60,14 @@ namespace Model
 				_filteredProcessors.Add(new FilteredProcessor(processor, filters));
 			}
 
-			public void Process(IFileSystemItem root)
+			public void Process(IFileSystemItem root, IEnumerationStrategy enumerationStrategy)
 			{
 				if (_filteredProcessors.Count == 0)
 				{
 					throw new InvalidOperationException("add at least one processing strategy");
 				}
 
-				using (var enumerator = new EnumeratorContainer(Enumerator_ProcessItemEvent))
+				using (var enumerator = new EnumeratorContainer(Enumerator_ProcessItemEvent, enumerationStrategy))
 				{
 					enumerator.Enumerate(root);
 				}
