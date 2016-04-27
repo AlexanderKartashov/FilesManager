@@ -1,6 +1,5 @@
-﻿using NUnit.Framework;
-using Model.Core;
-using System.IO;
+﻿using Alphaleonis.Win32.Filesystem;
+using NUnit.Framework;
 
 namespace NUnit.ModelTests
 {

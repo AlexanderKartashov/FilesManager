@@ -1,9 +1,6 @@
 ﻿using Model.Processing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Model.Core;
 using System.IO;
 
@@ -26,8 +23,7 @@ namespace FileListPrinter
 		private String Printer(IFileSystemItem item, int level)
 		{
 			var builder = new StringBuilder();
-			builder.Append('=', level);
-			builder.Append(' ');
+			builder.Append('\t', level);
 			builder.Append(item.Info.FullName);
 			return builder.ToString();
 		}

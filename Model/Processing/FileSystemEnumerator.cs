@@ -1,6 +1,5 @@
 ﻿using Model.Core;
 using System;
-using System.Linq;
 
 namespace Model
 {
