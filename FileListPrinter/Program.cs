@@ -1,73 +1,78 @@
 ﻿using System;
-using Model.Core;
-using Model.Processing;
-using System.IO;
+using System.Linq;
 using System.Collections.Generic;
+using CommandLine;
+using Model.Processing;
+using Model.Core;
 
 namespace FileListPrinter
 {
 	class Program
 	{
-		class FileHandler : IDisposable
-		{
-			private TextWriter _sw;
-
-			public FileHandler(TextWriter sw)
-			{
-				_sw = sw;
-			}
-
-			public void Dispose()
-			{
-				_sw?.Close();
-			}
-		}
-
 		static void Main(string[] args)
 		{
-			if (args.Length < 1)
+			var options = new Options();
+			var parser = new Parser((settings) => {
+				settings.CaseSensitive = false;
+				settings.MutuallyExclusive = true;
+				settings.HelpWriter = Console.Error;
+			});
+
+			bool success = parser.ParseArguments(args, options);
+			if (!success)
 			{
-				Console.WriteLine("Command line options : <root path> [<output file path>]");
 				return;
 			}
 
-			var rootPath = args[0];
+			IEnumerationStrategy strategy = null;
+			IPrinter printer = null;
 
-			var stream = Console.Out;
-			if (args.Length == 2)
+			var processor = new ItemsProcessor();
+			var processorStrategiesList = new List<IItemProcessorWithOutput>();
+
+			try
 			{
-				stream = System.IO.File.CreateText(args[1]);
+				strategy = Selector(options.Mode, "Invalid walkthrought mode", new Dictionary<String, Func<IEnumerationStrategy>>() {
+					{ "d", () => new EnumerateInDepth() },
+					{ "f", () => new EnumerateFilesFirst() }
+				});
+
+				printer = Selector(options.Printer, "Invalid print mode", new Dictionary<string, Func<IPrinter>>() {
+					{ "s" , () => new SimplePrinter() },
+					{ "d" , () => new ExtraInfoPrinter() }
+				});
+
+				options.Tasks.Distinct().ToList().ForEach((String item) =>
+				{
+					var tuple = Selector(item, "Invalid task", new Dictionary<String, Func<Tuple<IItemProcessorWithOutput, IList<IItemFilter>>>>() {
+						{ "h", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new HierarchyPrinter(printer), null) },
+						{ "f", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new HierarchyPrinter(printer, false), new List<IItemFilter>(){ new FilesFilter() }) },
+						{ "s", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new StatisticsCollector(), new List<IItemFilter>(){ new FilesFilter() }) }
+					});
+
+					processorStrategiesList.Add(tuple.Item1);
+					processor.AddProcessorStrategy(tuple.Item1, tuple.Item2);
+				});
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+				return;
 			}
 
-			Console.WriteLine("Select enumeration type:");
-			Console.WriteLine("1 - in depth");
-			Console.WriteLine("2 - files first");
-			var strategy = Selector(new Dictionary<int, Func<IEnumerationStrategy>>() {
-				{ 1, () => new EnumerateInDepth() },
-				{ 2, () => new EnumerateFilesFirst() }
-			});
+			var stream = Console.Out;
+			if (options.OutputFile != null)
+			{
+				stream = System.IO.File.CreateText(options.OutputFile);
+			}
 
-			Console.WriteLine("Select print info type:");
-			Console.WriteLine("1 - only file path");
-			Console.WriteLine("2 - additional info");
-			var printer = Selector(new Dictionary<int, Func<IPrinter>>() {
-				{ 1, () => new SimplePrinter() },
-				{ 2, () => new ExtraInfoPrinter() }
-			});
-
-			Console.WriteLine("Select printer type:");
-			Console.WriteLine("1 - hierarchy");
-			Console.WriteLine("2 - files list");
-			var processorStrategy = Selector(new Dictionary<int, Func<Tuple<IItemProcessor, IList<IItemFilter>>>>() {
-				{ 1, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, printer), null) },
-				{ 2, () => Tuple.Create<IItemProcessor, IList<IItemFilter>>(new HierarchyPrinter(stream, printer, false), new List<IItemFilter>(){ new FilesFilter() }) }
-			});
+			Console.WriteLine("Creating model");
 
 			var modelCreator = new ModelCreator();
 			IFileSystemItem model = null;
 			try
 			{
-				model = modelCreator.GetFileSystemIerarchy(rootPath);
+				model = modelCreator.GetFileSystemIerarchy(options.RootFolder);
 			}
 			catch (Exception e)
 			{
@@ -75,16 +80,16 @@ namespace FileListPrinter
 				return;
 			}
 
+			Console.WriteLine("Processing model");
+
 			try
 			{
-				var processor = new ItemsProcessor();
-				processor.AddProcessorStrategy(processorStrategy.Item1, processorStrategy.Item2);
 				processor.Process(model, strategy);
+				processorStrategiesList.ForEach((IItemProcessorWithOutput item) => item.PrintResults(stream));
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(String.Format("error occured while model processing: {0}", e.Message));
-				return;
 			}
 			finally
 			{
@@ -93,27 +98,14 @@ namespace FileListPrinter
 			}
 		}
 
-		private static T Selector<T>(Dictionary<int, Func<T>> dictionary)
+		private static T Selector<T>(String key, String errorDescription, Dictionary<String, Func<T>> creatorMap)
 		{
-			do
+			if (!creatorMap.ContainsKey(key))
 			{
-				var choice = Console.ReadLine();
-				int parsedChoice = -1;
-				if (!int.TryParse(choice, out parsedChoice))
-				{
-					Console.WriteLine("Invalid input. Enter correct choice.");
-					continue;
-				}
+				throw new ArgumentException(String.Format("{0} {1}", errorDescription, key));
+			}
 
-				if (!dictionary.ContainsKey(parsedChoice))
-				{
-					Console.WriteLine("Invalid choice. Try again.");
-					continue;
-				}
-
-				return dictionary[parsedChoice].Invoke();
-
-			} while (true);
+			return creatorMap[key]();
 		}
 	}
 }

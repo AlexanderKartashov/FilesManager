@@ -4,16 +4,17 @@ using Model.Core;
 
 namespace FileListPrinter
 {
-	class SimplePrinter : IPrinter
+	abstract class BasePrinter : IPrinter
 	{
-		public String Print(IFileSystemItem item, int level, bool addIndent)
+		public abstract String Print(IFileSystemItem item, int level, bool addIndent);
+
+		protected String AddIndent(int level, bool addIndent)
 		{
 			var builder = new StringBuilder();
 			if (addIndent)
 			{
 				builder.Append('\t', level);
 			}
-			builder.Append(item.Info.FullName);
 			return builder.ToString();
 		}
 	}
