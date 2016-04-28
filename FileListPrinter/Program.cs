@@ -102,7 +102,7 @@ namespace FileListPrinter
 		{
 			if (!creatorMap.ContainsKey(key))
 			{
-				throw new ArgumentException(String.Format("{0} {1}", errorDescription, key));
+				throw new ArgumentException(String.Format("{0} '{1}'", errorDescription, key));
 			}
 
 			return creatorMap[key]();
