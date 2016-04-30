@@ -22,6 +22,9 @@ namespace FileListPrinter
 		[Option('p', "print", Required = true, HelpText = "Print result mode. Valid values are 'd' (detailed) or 's' (simple)")]
 		public String Printer { get; set; }
 
+		[Option('s', "silent", Required = false, HelpText = "Do not report progress")]
+		public bool Silnet { get; set; }
+
 		[HelpOption]
 		public string GetUsage()
 		{

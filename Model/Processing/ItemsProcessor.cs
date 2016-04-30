@@ -9,7 +9,6 @@ namespace Model
 	{
 		public class ItemsProcessor
 		{
-
 #region nested types
 			private struct FilteredProcessor
 			{

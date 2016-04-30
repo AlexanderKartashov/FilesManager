@@ -58,6 +58,7 @@
     <Compile Include="FileTest.cs" />
     <Compile Include="FolderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatisticsCollectorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">

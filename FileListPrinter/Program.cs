@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using CommandLine;
 using Model.Processing;
 using Model.Core;
+using Alphaleonis.Win32.Filesystem;
 
 namespace FileListPrinter
 {
@@ -47,7 +48,7 @@ namespace FileListPrinter
 					var tuple = Selector(item, "Invalid task", new Dictionary<String, Func<Tuple<IItemProcessorWithOutput, IList<IItemFilter>>>>() {
 						{ "h", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new HierarchyPrinter(printer), null) },
 						{ "f", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new HierarchyPrinter(printer, false), new List<IItemFilter>(){ new FilesFilter() }) },
-						{ "s", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new StatisticsCollector(), new List<IItemFilter>(){ new FilesFilter() }) }
+						{ "s", () => Tuple.Create<IItemProcessorWithOutput, IList<IItemFilter>>(new StatisticsCollectorPrinter(), new List<IItemFilter>(){ new FilesFilter() }) }
 					});
 
 					processorStrategiesList.Add(tuple.Item1);
@@ -72,6 +73,16 @@ namespace FileListPrinter
 			IFileSystemItem model = null;
 			try
 			{
+				if (!options.Silnet)
+				{
+					modelCreator.ItemAddedInModelEvent += (String path, bool isFolder) =>
+					{
+						if (isFolder)
+						{
+							Console.WriteLine(String.Format("Processing directory {0}", path));
+						}
+					};
+				}
 				model = modelCreator.GetFileSystemIerarchy(options.RootFolder);
 			}
 			catch (Exception e)
@@ -96,6 +107,11 @@ namespace FileListPrinter
 				stream.Flush();
 				stream.Close();
 			}
+		}
+
+		private static void ModelCreator_ItemAddedInModelEvent(string itemPath)
+		{
+			throw new NotImplementedException();
 		}
 
 		private static T Selector<T>(String key, String errorDescription, Dictionary<String, Func<T>> creatorMap)

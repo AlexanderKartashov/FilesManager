@@ -13,8 +13,14 @@ namespace NUnit.ModelTests
 		private FileSystemTestsInitializer _initializer;
 		private ModelCreator _creator;
 
-		private List<String> _paths;
-		private IEnumerator<String> _pathEnumerator;
+		class TestData
+		{
+			public String Path { get; set; }
+			public bool IsFolder { get; set; }
+		}
+
+		private List<TestData> _paths;
+		private IEnumerator<TestData> _pathEnumerator;
 
 		[OneTimeSetUp]
         public void OneTimeSetUp()
@@ -35,17 +41,17 @@ namespace NUnit.ModelTests
             _creator = new ModelCreator();
 			_creator.ItemAddedInModelEvent += _creator_ItemAddedInModelEvent;
 
-			_paths = new List<String>
+			_paths = new List<TestData>
 			{
-				_initializer.initialPath,
-				_initializer.subDir1Path,
-				_initializer.subDir1FilePath,
-				_initializer.subDir2Path,
-				_initializer.subSubDirPath,
-				_initializer.subSubDirFilePath,
-				_initializer.subDir3Path,
-				_initializer.file1Path,
-				_initializer.file2Path
+				new TestData() { Path = _initializer.initialPath, IsFolder = true },
+				new TestData() { Path = _initializer.subDir1Path, IsFolder = true },
+				new TestData() { Path = _initializer.subDir1FilePath, IsFolder = false },
+				new TestData() { Path = _initializer.subDir2Path, IsFolder = true },
+				new TestData() { Path = _initializer.subSubDirPath, IsFolder = true },
+				new TestData() { Path = _initializer.subSubDirFilePath, IsFolder = false },
+				new TestData() { Path = _initializer.subDir3Path, IsFolder = true },
+				new TestData() { Path = _initializer.file1Path, IsFolder = false },
+				new TestData() { Path = _initializer.file2Path, IsFolder = false }
 			};
 			_pathEnumerator = _paths.GetEnumerator();
 			_pathEnumerator.Reset();
@@ -73,10 +79,11 @@ namespace NUnit.ModelTests
 			Assert.That(() => _creator.GetFileSystemIerarchy(_initializer.subDir1FilePath), Throws.ArgumentException);
         }
 
-		private void _creator_ItemAddedInModelEvent(string itemPath)
+		private void _creator_ItemAddedInModelEvent(string itemPath, bool isFolder)
 		{
 			var testItem = _pathEnumerator.Current;
-			Assert.That(itemPath, Is.EqualTo(testItem));
+			Assert.That(itemPath, Is.EqualTo(testItem.Path));
+			Assert.That(isFolder, Is.EqualTo(testItem.IsFolder));
 			_pathEnumerator.MoveNext();
 		}
 

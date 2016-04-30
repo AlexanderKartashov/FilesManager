@@ -60,6 +60,7 @@
     <Compile Include="Core\FileSystemItemBase.cs" />
     <Compile Include="Core\Folder.cs" />
     <Compile Include="Core\IFileSystemItem.cs" />
+    <Compile Include="Processing\StatisticsCollector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

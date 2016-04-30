@@ -10,10 +10,10 @@ namespace NUnit.ModelTests
 		private const String _subDir2 = "subdir2";
 		private const String _subDir3 = "subdir3";
 		private const String _subSubDir = "subsubdir";
-		private const String _file1 = "file1";
-		private const String _file2 = "file2";
-		private const String _subDir1File = "subdir1file";
-		private const String _subSubDirFile = "subsubdirfile";
+		private const String _file1 = "file1.exe";
+		private const String _file2 = "file2.exe";
+		private const String _subDir1File = "subdir1file.bat";
+		private const String _subSubDirFile = "subsubdirfile.txt";
 
 		public String initialPath;
 		public String subDir1Path;
