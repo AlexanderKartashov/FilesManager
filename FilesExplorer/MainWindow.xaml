@@ -1,0 +1,56 @@
+﻿<Window x:Class="FilesExplorer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FilesExplorer"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="425">
+    <Window.Resources>
+        <Style x:Key="ControlStyle" TargetType="Control">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Text, ElementName=rootFolderText, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static sys:String.Empty}">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid VerticalAlignment="Stretch" Name="progressLayer" Panel.ZIndex="2" Background="White" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Name="progressDescription"/>
+            <ProgressBar Grid.Row="1" VerticalAlignment="Top" Height="15" IsIndeterminate="True"/>
+        </Grid>
+        <StackPanel Panel.ZIndex="1" Name="contentLayer">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="123*"/>
+                    <ColumnDefinition Width="131*"/>
+                    <ColumnDefinition Width="63*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" HorizontalAlignment="Stretch" x:Name="rootFolderText" Grid.ColumnSpan="2">
+                    <TextBox.Text>
+                        <Binding Path="RootPath" UpdateSourceTrigger="PropertyChanged"/>
+                    </TextBox.Text>
+                </TextBox>
+                <Button x:Name="viewButton" Grid.Column="2" HorizontalAlignment="Stretch" Content="View" Click="viewButton_onClick" Style="{StaticResource ControlStyle}"/>
+            </Grid>
+            <Expander x:Name="treeViewExpander" Header="Tree View" HorizontalAlignment="Stretch">
+                <TreeView x:Name="treeView" VerticalAlignment="Top"/>
+            </Expander>
+            <Expander x:Name="listViewExpander" Header="List view" HorizontalAlignment="Stretch">
+                <ListView></ListView>
+            </Expander>
+            <Expander x:Name="statisticsExpander" Header="Statistics">
+                <StackPanel>
+                    <TextBlock HorizontalAlignment="Stretch" Text="'''">
+                    </TextBlock>
+                </StackPanel>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Window>
