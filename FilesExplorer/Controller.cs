@@ -1,26 +1,38 @@
 ﻿using Model.Core;
 using Model.Processing;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 
 namespace FilesExplorer
 {
-	public class Controller
+	class Controller
 	{
+#region events
 		public event Action ModelCreationCompleteEvent;
 		public event Action<String> ModelCreationProgressEvent;
+		#endregion
 
-		public String RootPath { get; set; }
+#region classes
+		public class FilteredProcessor
+		{
+			public IList<IItemFilter> Filters { get; set; }
+			public IItemProcessor Processor { get; set; }
+		}
 
-		class Result
+		private class Result
 		{
 			public IFileSystemItem Model { get; set; }
 			public String ErrorMessage { get; set; }
 		}
+#endregion
+
+		public String RootPath { get; set; }
 
 		private BackgroundWorker _bw = new BackgroundWorker();
-		private ItemsProcessor _itemsProcessor = new ItemsProcessor();
+		private IList<FilteredProcessor> _filteredProcessors;
 
 		public Controller()
 		{
@@ -30,8 +42,9 @@ namespace FilesExplorer
 			_bw.WorkerReportsProgress = true;
 		}
 
-		public void CreateModel()
+		public void CreateModel(IList<FilteredProcessor> filteredProcessors)
 		{
+			_filteredProcessors = filteredProcessors;
 			_bw.RunWorkerAsync(RootPath);
 		}
 
@@ -51,7 +64,9 @@ namespace FilesExplorer
 			}
 			else
 			{
-				// todo
+				var itemsProcessor = new ItemsProcessor();
+				_filteredProcessors?.ToList().ForEach((item) => itemsProcessor.AddProcessorStrategy(item.Processor, item.Filters));
+				itemsProcessor.Process(result.Model, new EnumerateInDepth());
 			}
 		}
 

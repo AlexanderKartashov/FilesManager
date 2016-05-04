@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FilesExplorer"
+        xmlns:local="clr-namespace:FilesExplorer.InternalModel"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
+        xmlns:self="clr-namespace:FilesExplorer.InternalModel"
         Title="MainWindow" Height="350" Width="425">
     <Window.Resources>
         <Style x:Key="ControlStyle" TargetType="Control">
@@ -25,32 +26,43 @@
             <TextBlock Grid.Row="0" TextTrimming="CharacterEllipsis" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Name="progressDescription"/>
             <ProgressBar Grid.Row="1" VerticalAlignment="Top" Height="15" IsIndeterminate="True"/>
         </Grid>
-        <StackPanel Panel.ZIndex="1" Name="contentLayer">
-            <Grid HorizontalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="123*"/>
-                    <ColumnDefinition Width="131*"/>
-                    <ColumnDefinition Width="63*"/>
-                </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" HorizontalAlignment="Stretch" x:Name="rootFolderText" Grid.ColumnSpan="2">
-                    <TextBox.Text>
-                        <Binding Path="RootPath" UpdateSourceTrigger="PropertyChanged"/>
-                    </TextBox.Text>
-                </TextBox>
-                <Button x:Name="viewButton" Grid.Column="2" HorizontalAlignment="Stretch" Content="View" Click="viewButton_onClick" Style="{StaticResource ControlStyle}"/>
-            </Grid>
-            <Expander x:Name="treeViewExpander" Header="Tree View" HorizontalAlignment="Stretch">
-                <TreeView x:Name="treeView" VerticalAlignment="Top"/>
+        <Grid Panel.ZIndex="1" Name="contentLayer" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" x:Name="rootFolderText" Grid.ColumnSpan="2" Text="{Binding Path=RootPath, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Row="0" x:Name="viewButton" Grid.Column="2" HorizontalAlignment="Stretch" Content="View" Click="viewButton_onClick" Style="{StaticResource ControlStyle}"/>
+            <Expander x:Name="treeViewExpander" Header="Tree View" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                <TreeView x:Name="treeView" VerticalAlignment="Top">
+                    <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type self:BaseNode}" ItemsSource="{Binding Items}">
+                                    <TextBlock Text="{Binding Path=RelativePath}" />
+                            </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
             </Expander>
-            <Expander x:Name="listViewExpander" Header="List view" HorizontalAlignment="Stretch">
-                <ListView></ListView>
+            <Expander x:Name="listViewExpander" Header="List view" HorizontalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsExpanded="True">
+                <ListView Name="filesList">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=RelativePath}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Expander>
-            <Expander x:Name="statisticsExpander" Header="Statistics">
+            <Expander x:Name="statisticsExpander" Header="Statistics" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                 <StackPanel>
                     <TextBlock HorizontalAlignment="Stretch" Text="'''">
                     </TextBlock>
                 </StackPanel>
             </Expander>
-        </StackPanel>
+        </Grid>
     </Grid>
 </Window>

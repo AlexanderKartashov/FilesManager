@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="InternalModel\BaseNode.cs" />
     <Compile Include="Controller.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -70,6 +71,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="InternalModel\FileNode.cs" />
+    <Compile Include="InternalModel\FilesListBuilder.cs" />
+    <Compile Include="InternalModel\FolderNode.cs" />
+    <Compile Include="InternalModel\FolderNodesBuilder.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

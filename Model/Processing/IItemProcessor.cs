@@ -1,9 +1,12 @@
 ﻿using Model.Core;
 
-namespace Model.Processing
+namespace Model
 {
-	public interface IItemProcessor
+	namespace Processing
 	{
-		void ProcessItem(IFileSystemItem item, int level);
+		public interface IItemProcessor
+		{
+			void ProcessItem(IFileSystemItem item, int level);
+		}
 	}
 }

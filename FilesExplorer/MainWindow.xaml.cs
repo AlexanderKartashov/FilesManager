@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FilesExplorer.InternalModel;
+using Model.Processing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Model.Core;
+using System.Collections.ObjectModel;
 
 namespace FilesExplorer
 {
@@ -20,6 +24,9 @@ namespace FilesExplorer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		public FolderNodesBuilder FoldersHierarchy { get; set; }
+		public FilesListBuilder FilesList { get; set; }
+
 		private Controller _controller = new Controller();
 
 		public MainWindow()
@@ -48,8 +55,18 @@ namespace FilesExplorer
 
 		private void viewButton_onClick(object sender, RoutedEventArgs e)
 		{
+			FilesList = new FilesListBuilder(_controller.RootPath);
+			FoldersHierarchy = new FolderNodesBuilder(_controller.RootPath);
+
 			progressLayer.Visibility = Visibility.Visible;
-			_controller.CreateModel();
+			_controller.CreateModel(new List<Controller.FilteredProcessor>()
+			{
+				new Controller.FilteredProcessor() { Filters = new List<IItemFilter>() { new FilesFilter() }, Processor = FilesList },
+				new Controller.FilteredProcessor() { Processor = FoldersHierarchy }
+			});
+
+			treeView.ItemsSource = FoldersHierarchy.Root;
+			filesList.ItemsSource = FilesList.Files;
 		}
 	}
 }
